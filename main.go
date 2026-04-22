@@ -1,6 +1,7 @@
 package main
 
 import (
+	"net/http"
 	"os"
 
 	"github.com/gin-gonic/gin"
@@ -9,14 +10,16 @@ import (
 func main() {
 	r := gin.Default()
 
-	r.GET("/", func(c *gin.Context) {
-		c.JSON(200, gin.H{
+	// templates papkasini ulaymiz
+	r.LoadHTMLGlob("templates/*")
 
-			"message": "Zar seni yaxshi koraman ",
+	r.GET("/", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "index.html", gin.H{
+			"Message": "Zar, men seni juda yaxshi ko'raman!",
 		})
 	})
 
-	// Global portni olish (Render uchun shart)
+	// Port sozlamasi (Render uchun)
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080"
