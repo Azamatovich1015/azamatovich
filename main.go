@@ -27,20 +27,18 @@ func main() {
 	r := gin.Default()
 	r.LoadHTMLGlob("templates/*")
 
-	// Asosiy sahifa
 	r.GET("/", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "index.html", gin.H{
 			"Message": "Zar, men seni juda yaxshi ko'raman!",
 		})
 	})
 
-	// Javob yuborish va Telegram bildirishnomasi
 	r.POST("/reply", func(c *gin.Context) {
 		reply := c.PostForm("reply_text")
 		if reply != "" {
 			db.Create(&Message{Content: reply})
 
-			// TELEGRAM SOZLAMALARI (O'z ma'lumotlaringizni qo'ying)
+			// TELEGRAM QISMI
 			botToken := "SIZNING_BOT_TOKENINGIZ"
 			chatID := "SIZNING_ID_RAQAMINGIZ"
 			text := fmt.Sprintf("Yangi javob keldi: %s", reply)
@@ -52,14 +50,12 @@ func main() {
 		c.HTML(http.StatusOK, "index.html", gin.H{"Message": "Xabaringiz yuborildi! ❤️"})
 	})
 
-	// Admin panel (Parol: admin123)
 	r.GET("/javoblar", func(c *gin.Context) {
 		pass := c.Query("pw")
-		if pass != "20021015" {
-			c.String(http.StatusForbidden, "Kirish taqiqlangan! Parol noto'g'ri.")
+		if pass != "admin123" {
+			c.String(http.StatusForbidden, "Kirish taqiqlangan!")
 			return
 		}
-
 		var messages []Message
 		db.Order("created_at desc").Find(&messages)
 		c.HTML(http.StatusOK, "admin.html", gin.H{"Messages": messages})
